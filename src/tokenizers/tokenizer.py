@@ -3,7 +3,7 @@ import torch
 from typing import Dict, List, Tuple
 from dataclasses import dataclass
 
-from bpe import BytePairEncoder
+from src.tokenizers.bpe import BytePairEncoder
 
 from typing import Any
 

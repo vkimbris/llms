@@ -1,9 +1,7 @@
-import torch
-
 from typing import List
 from tqdm.notebook import tqdm
 
-from tokenizer import Tokenizer
+from src.tokenizers.tokenizer import Tokenizer
 
 class Preprocessor:
 
