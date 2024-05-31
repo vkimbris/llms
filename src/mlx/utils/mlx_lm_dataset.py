@@ -1,3 +1,4 @@
+import numpy as np
 import mlx.core as mx
 import mlx.data as dx
 
@@ -17,7 +18,11 @@ class LanguageModelingDataset:
                 "labels": _label
             })
 
-        self.buffer = dx.buffer_from_vector(elements)
+    def __len__(self):
+        return len(self.inputs)
 
     def to_dataloader(self, batch_size: int = 32):
-        return self.buffer.shuffle().to_stream().batch(batch_size)
+        perm = mx.array(np.random.permutation(self.labels.shape[0]))
+        for s in range(0, self.labels.shape[0], batch_size):
+            ids = perm[s : s + batch_size]
+            yield self.inputs[ids], self.labels[ids]

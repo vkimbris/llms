@@ -7,6 +7,8 @@ from src.tokenizers.bpe import BytePairEncoder
 
 from typing import Any
 
+#TODO: rewrite logic from torch to numpy or lists
+
 
 @dataclass
 class TokenizerOutput:
