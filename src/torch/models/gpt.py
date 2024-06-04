@@ -1,4 +1,6 @@
+import os
 import torch
+import json
 import torch.nn as nn
 
 import torch.nn.functional as F
@@ -196,3 +198,31 @@ class GPT(nn.Module):
             x = decoder(x, attention_mask)
 
         return self.output_layer(x)
+    
+    def save(self, path_to_folder: str):
+        self.save_weights(path_to_folder)
+        self.save_config(path_to_folder)
+
+    def save_weights(self, path_to_folder: str):
+        if not os.path.isdir(path_to_folder):
+            os.mkdir(path_to_folder)
+
+        state_dict = self.state_dict()
+        for key, value in state_dict.items():
+            state_dict[key] = value.to("cpu")
+
+        torch.save(state_dict, path_to_folder + "/" + "model.pt")
+
+    def save_config(self, path_to_folder: str):
+        with open(path_to_folder + "/" + "model_config.json", "w") as f:
+            json.dump(self.params.__dict__, f)
+
+    @staticmethod
+    def from_pretrained(path_to_folder: str):
+        with open(path_to_folder + "/model_config.json", "r") as f:
+            params = json.load(f)
+
+        model = GPT(GPTParams(**params))
+        model.load_state_dict(torch.load(path_to_folder + "/model.pt"))
+
+        return model

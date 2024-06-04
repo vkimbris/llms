@@ -1,4 +1,6 @@
+import os
 import torch
+import json
 
 from typing import Dict, List, Tuple
 from dataclasses import dataclass
@@ -60,6 +62,20 @@ class Tokenizer:
             decoded_string += self.reverse_vocab[i]
 
         return decoded_string
+    
+    def save(self, path_to_folder) -> None:
+        if not os.path.isdir(path_to_folder):
+            os.mkdir(path_to_folder)
+        
+        merges = self.bpe.merges
+        merges = [{"left": pair[0], "right": pair[1], "merge": merge} for pair, merge in merges.items()]
+        
+        Tokenizer.__save_json(merges, path_to_folder + "/" + "merges.json")
+        
+        vocab = self.bpe.vocab
+        vocab = {value: index for index, value in enumerate(vocab)}
+
+        Tokenizer.__save_json(vocab, path_to_folder + "/" + "vocab.json") 
 
     @staticmethod
     def from_pretrained(path_to_folder: str):
@@ -74,5 +90,6 @@ class Tokenizer:
             return torch.tensor(output)
     
     @staticmethod
-    def _generate_attention_mask(size: Tuple[int, int]) ->  torch.Tensor | List[int] | List[List[int]]:
-        pass
+    def __save_json(json_dict: dict, path: str):
+        with open(path, "w") as f:
+            json.dump(json_dict, f)
