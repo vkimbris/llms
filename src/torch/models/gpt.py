@@ -155,8 +155,8 @@ class GPT(nn.Module):
         )
 
         self.positional_embeddings = nn.Parameter(
-            data=torch.empty(params.context_size, params.input_dim)
-        ).to(params.device)
+            data=torch.empty(params.context_size, params.input_dim, device=params.device)
+        )
 
         nn.init.xavier_uniform_(self.positional_embeddings)
 
@@ -221,6 +221,8 @@ class GPT(nn.Module):
     def from_pretrained(path_to_folder: str):
         with open(path_to_folder + "/model_config.json", "r") as f:
             params = json.load(f)
+
+        params["device"] = "cpu"
 
         model = GPT(GPTParams(**params))
         model.load_state_dict(torch.load(path_to_folder + "/model.pt"))
